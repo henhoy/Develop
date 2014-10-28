@@ -1,0 +1,7 @@
+open ftp.miracleas.dk
+mirtool
+online
+cd online/mssql
+prompt
+get update_MSSQL_script.ftp
+bye

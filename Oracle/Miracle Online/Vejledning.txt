@@ -1,0 +1,55 @@
+Vejledning
+----------
+
+1 Lav C:\miracle_online + \script og \log - ditto for IX'erne 
+
+2 Stå hos kunden i c:\miracle_online\script - ditto for IX'erne 
+
+3 Lav \old folder og flyt alt gammelt derover just in case 
+
+4 Gå i cmd + stå igen i c:\miracle_online\script + ditto for IX'erne 
+
+5 Hent tjekket fra FTP server 
+ftp ftp.miracleas.dk 
+us: mirtool 
+pw: online 
+cd online/check2 
+mget * 
+bye 
+
+6 Slet de filer, der åbenlyst ikke hører til på dit operativsystem. 
+  Husk at mot.pl skal bruges på IX'erne istf. mot.exe 
+
+7 På IX'erne skal du huske at chmod +x til .SH filerne 
+8 På IX'erne skal du lige lave en dummy fil kaldet xx_sets.cmd, som du chmod +x 'er 
+  Den blir dannet undervejs i tjekkørslerne, men for at den kan eksekveres er det nemmest lige at lave en dummy, som du chmod'er 
+
+9 Hvis flere baser på samme server, så kopieres klumpen af linier med oracle_sid og login+kørsel af check_start.sql samt kørsel af MOT 
+10 Hvis CHOICE kommandoen ikke findes på serveren (fx Win 2000), omdøbes 
+  choice_win2000.cmd til choice.cmd (filen ligger her i miracle_online/script) 
+
+11 Rename de 2 skabeloner, så de hedder RUN_CHECK.SH/cmd og CHECK_MAINTANANCE.SH/cmd for at vi kører ens de fleste steder. 
+
+12 Tilret:
+tilføj kundens ftp-username/password 
+indskriv oracle_sid 
+indskriv sys username/password 
+Hvis der ikke er "/ as sysdba", skal du huske at rette BÅDE i RUN_CHECK.SH/cmd og i CHECK_MAINTENANCE.SH/cmd filen! 
+
+13 Hvis du har problemer med unix scripts, så tjek lige hvilken shell, der kører på netop din maskine
+   ret evt. til KSH eller BASH, hvis det passer bedre i dit kram (fx mht EXPORT på een linje i xx_sets)
+
+
+14 Det er ikke alle Unix kunder, hvor refresh af scriptet funker - TEST det - og pil det ud hvis det ikke funker. 
+   Husk nedenstående på alle .SH filerne - og på ftp filerne. Og nej, det skader næppe at køre dem også på SQL filerne. 
+
+15 På visse IX'er skal du køre DOS2UNIX eller hvis denne ikke findes, selv klare det vhja, VI :g/^M/s///g (^M laves ved CTRL V + return) 
+
+16 Test skidtet !! 
+   Hvis du kører igen & igen, er det ikke sikkert at der er kommet data i en ny rotation af alertloggen 
+   Så du må lige klare det selv med en alter system switch logfile - eller acceptere at alertcopy og MOT ikke virker (de kræver at der FINDES en fil at arbejde med) 
+
+17 Hvis du vil ha rotereret evt. LISTENER logs, kan du lave en specifik fil for netop denne server (ofte er der flere listeners på serveren). 
+  Tag skabelonen med xxxxxx'erne i navnet .. og tilret den !!     
+
+18 Fejr dig selv med en kold øl, 1 stykke chokolade eller en kage efter eget valg :-)

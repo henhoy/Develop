@@ -1,0 +1,15 @@
+open ftp.miracleas.dk
+mirtool
+online
+get online/mssql/sqlserver.sql
+get online/mssql/sqlserver2K.sql
+get online/mssql/skabelon_MSSQL_RUN_CHECK.CMD
+get online/mssql/MSSQL_Update_Info.cmd
+get online/mssql/MSSQL_Update_Info.txt
+get online/mssql/skabelon_sqlserver_config.sql
+get online/mssql/new_sql_version_todo.txt
+get online/check2/showdate.vbs
+get online/check2/GetStorage_info.wsf
+get online/mssql/beta/sqlserver_beta.sql
+get online/mssql/sqlserver_pre.sql
+bye

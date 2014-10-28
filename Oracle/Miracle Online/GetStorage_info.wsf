@@ -1,0 +1,959 @@
+<job id="SpoolerCrash">
+<script language="VBScript">
+
+' *******************************************************************************
+' ** Script  : GetStorage_info.wsf
+' ** Type    : vbscript
+' ** Info    : Returns Windows drive storage information in HTML format
+' ** Usage   : cscript //nologo GetStorage_info.wsf > <output>.html
+' **         : Use the global variables (DiskWarning & DiskCritical) to change
+' **         : values for warning and critical.
+' **         : Script now recognize drives dynamically - but only fixed drives.
+' **
+' ** History : 20060912, Miracle A/S, HMH - Ver. 1.0 Created
+' **         : 20070911, Miracle A/S, HMH - Ver. 1.1 Dynamic drive recognition
+' **         : 20100715, Miracle A/S, MST - Ver. 1.2 Not ready drives
+' **         : 20100717, Miracle A/S, MST - Ver. 1.3 OS, CPU & IP Info added
+' **         : 20110511, Miracle A/S, HFO - Ver. 1.4 VMI dato formatet om til en alm. dato/kl.
+' **         : 20110617, Miracle A/S, MST - Ver. 1.5 VMI VOlume info added
+' *'         : 20111202, Miracle A/S, MST - Ver. 1.6 Windows Update added and partiotion/drive letter added
+' *'         : 20120109, Miracle A/S, MST - Ver. 1.7 MountPoints, Devicedrivers
+' ************************************************************************************************************
+
+'On Error Resume Next
+
+tjekver = "1.7"
+
+DiskWarning  = 75
+DiskCritical = 90
+Dim UsedSpacePCT
+
+'----------------------------------------------------------------------------------
+' * Main Program goes here *
+'----------------------------------------------------------------------------------
+'GetDriveSpaceInfo
+
+  dim Ghtml
+  dim PHtml 
+  dim DHtml
+  dim THtml
+  dim OHtml
+  dim dbhtml
+  dim aphtml
+  dim shtml
+  dim prhtml
+  dim Div
+  dim machine
+
+  wscript.echo ShowDriveSpace
+
+' * Main Program ends here *
+'-----------------------------------------------------------------------------------
+
+Function ShowDriveSpace()
+
+  'vi leder efter os selv !
+  strComputer = "."
+
+  ' WMI Connection to the object in the CIM namespace
+  Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
+ 
+  DiskInfo(objWMIService)
+  MountPointInfo(objWMIService)
+  PartitionInfo(objWMIService)
+  OSInfo(objWMIService)
+  DBInfo(objWMIService)
+  ApServInfo(objWMIService)
+  ServiceInfo(objWMIService)
+  ProcessInfo(objWMIService)
+  DeviceInfo(objWMIService)
+  
+ 
+  '-----------------------  A l l e s   i n   A l l e s --------------------------------
+  'Miracle headers
+  
+  mirstyle = "<style type=""text/css"">" & _
+             "   TH {background-color=""#cccccc"";}" & _
+             "</style>"
+
+   Miracle = "<html>" & mirstyle & "<head><title>Windows Disk & OS Information</title></head>" & _
+            "<font face=sans-serif><img src=""http://miracleas.dk/images/miracle/images/logo/miracle_online_170.gif"">" & _
+            "<p align=right>Online tjek (v "& tjekver & ") d. " & date & "   " & time
+
+   Header = "<h2>" & machine & "</h2>"
+
+  'Returner det hele stringet sammen
+   ShowDriveSpace = Miracle & Header & GHtml & THtml & Phtml & Ohtml & dbhtml & aphtml & shtml & prhtml & dhtml
+
+End Function
+
+Function find3gb(maxmemory)
+
+Dim S
+
+   Select Case maxmemory
+   Case 2097024
+      S = ""
+   Case 3145600
+      S = "/3GB set"
+   Case 3104640
+      S = "/3GB and /USERVA=3030 set"
+   Case Else
+      S = ""
+   End Select'
+
+   find3gb = S
+
+End Function
+
+Function PAE(paesetting)
+
+Dim S
+
+   Select Case paesetting
+   Case true
+      S = "PAE true"
+   Case false
+      S = "PAE false"
+   Case Else
+      S = ""
+   End Select'
+
+   PAE = S
+
+End Function
+
+' Lav Drive nr om til noget mere begavet !!
+Function ShowDriveType(Drive)
+
+   Dim S
+
+   Select Case Drive
+   Case 0
+        S = "Unknown"
+   Case 1
+        S = "No root directory"
+   Case 2
+        S = "Removable"
+   Case 3
+        S = "Local"
+   Case 4
+        S = "Network"
+   Case 5
+        S = "CD-ROM"
+   Case 6
+        S = "RAM Disk"
+   Case Else
+        S = "Unknown"
+   End Select
+
+   ShowDriveType = S
+
+End Function
+
+' Lav VMI dato formatet om til en alm. dato/kl vendt rigtigt :).
+Function WMIDateStringToDate(dtmBootup)
+    WMIDateStringToDate = Mid(dtmBootup, 7, 2) & "/" & _
+         Mid(dtmBootup, 5, 2) & "/" & Left(dtmBootup, 4) _
+         & " " & Mid (dtmBootup, 9, 2) & ":" & _
+         Mid(dtmBootup, 11, 2) & ":" & Mid(dtmBootup, _
+         13, 2)
+End Function
+
+function mmod(a,moduloValue)
+  dim k,t
+  k=CDbl(a)
+  t=Fix(k/moduloValue)
+  mmod = k-(t*moduloValue)
+end function
+
+Function DiskInfo(objWMIService)
+  
+  'Prepare Table header  
+  THtml = "<table border=1 cellspacing=1>"
+  THtml = THtml & "<caption><font=size=1>Storage Info</caption>"
+  THtml = THtml & "<tr align=right>"
+  THtml = THtml & "<th> Drive </th>"
+  THtml = THtml & "<th> Volume </th>"
+  THtml = THtml & "<th> Type </th>"
+  THtml = THtml & "<th> Filsystem </th>"
+  THtml = THtml & "<th> BlockSize </th>"
+  THtml = THtml & "<th> Totalsize GB </th>"
+  THtml = THtml & "<th> Usedsize GB </th>"
+  THtml = THtml & "<th> Freesize GB </th>"
+  THtml = THtml & "<th> Used % </th>"
+  THtml = THtml & "</tr>"
+
+  ' Prepare Graph header
+
+  GHtml = "<h3>Disk Information</h3>"
+  GHtml = GHtml & "<table width=450 border=0 cellspacing=8 cellpadding=0>"
+  GHtml = GHtml & "<tr><td height=20>"
+
+  ' WMI Query to the Win32_ComputerSystem
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_LogicalDisk")
+
+   For Each objItem in colItems
+
+   'Populate driveinfo table & driveinfo graph
+
+  'Kun local og network drives tages med
+    If objItem.DriveType=3 or objItem.DriveType=4 Then
+
+  strComputer = "."
+    Blocksize = "&nbsp;"
+
+  ' Nogle OS har ikke Win32_volume - derfor OK med fejl her
+  On Error Resume Next
+
+  ' Hent lige blocksize på disken !
+  Set colItems2 = objWMIService.ExecQuery("Select * from Win32_Volume where driveletter='" & objItem.Name & "'")
+  For Each objItem2 In colItems2
+    Blocksize = objItem2.BlockSize
+	Name = objItem2.Name
+  Next
+
+  On Error GoTo 0
+
+  if Isnull(objItem.Size) then
+       'Driveinfo table
+         THtml = THtml & "<tr align=right>"
+         'Driveletter
+         THtml = THtml & "<td><b><font color=red>" & objItem.Name & "</font></b></td>"
+       THtml = THtml & "<td><b><font color=red>Not ready</font></b></td><td>" & ShowDriveType(objItem.DriveType) & "<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;<td>&nbsp;</td>"
+       THtml = THtml & "</tr>"
+   end if
+
+    if not Isnull(objItem.Size) then
+
+       FGC = "FFFFFF"
+       UsedSpacePCT = Round((objItem.Size-objItem.FreeSpace) / objItem.Size,2) * 100
+       If UsedSpacePCT >= DiskWarning then
+          If UsedSpacePCT >= DiskCritical then
+             BGC = "FF0000"
+             BGC2 = "ffdddd"
+          Else
+             BGC = "EEDD11"
+             BGC2 = "ffffcc"
+             FGC = "000000"
+          End if
+       Else
+         BGC = "009900"
+         BGC2 = "ffffff"
+       End if
+
+      'Driveinfo table
+      THtml = THtml & "<tr align=right bgcolor=#" & BGC2 & ">"
+      'Driveletter
+      THtml = THtml & "<td>" & objItem.Name & "</td>"
+      'Volume name
+      THtml = THtml & "<td> " & objItem.VolumeName & "</td>"
+      'Drive type
+      THtml = THtml & "<td> " & ShowDriveType(objItem.DriveType) & "</td>"
+      'Drive filsystem
+      THtml = THtml & "<td> " & objItem.FileSystem & "</td>"
+      'Drive Blockszie
+      THtml = THtml & "<td> " & Blocksize & "</td>"
+      'Drive totalsize
+      THtml = THtml & "<td>" & Round(objItem.Size/1024/1024/1024,3) & "</td>"
+      'Drive used
+      THtml = THtml & "<td>" & Round((objItem.Size-objItem.FreeSpace)/1024/1024/1024,3) & "</td>"
+      'Drive freespace
+      THtml = THtml & "<td>" & Round(objItem.FreeSpace/1024/1024/1024,3) & "</td>"
+      'Drive used percent
+      THtml = THtml & "<td>" & Round((objItem.Size-objItem.FreeSpace) / objItem.Size,2) * 100 & "</td>"
+      THtml = THtml & "</tr>"
+
+      'Driveinfo graph
+
+      GHtml = GHtml & objItem.Name
+      GHtml = GHtml & "<table border=0 cellspacing=0 cellpadding=0 height=15 width=100%><tr><td bgcolor=#CCCCCC>"
+      GHtml = GHtml & "   <table width=" & Round((objItem.Size-objItem.FreeSpace) / objItem.Size,2) * 100 _
+                    &           "% border=0 cellspacing=0 cellpadding=0 height=100%><tr><td bgcolor=#" & BGC & ">"
+      GHtml = GHtml &     "<div align=center><b><font face=Verdana size=1 color=#" & FGC & ">"
+      GHtml = GHtml &           "Used " & Round((objItem.Size-objItem.FreeSpace) / objItem.Size,2) * 100 & "%"
+      GHtml = GHtml & "   </font></b></div>"
+      GHtml = GHtml & "   </td></tr></table>"
+      GHtml = GHtml & "</td></tr></table>"
+    End If
+   end if
+  Next
+end function
+
+Function MountPointInfo(objWMIService)
+ '---------------------------------
+ ' Hent Mount Point info
+ '---------------------------------
+ 
+   ' Nogle OS har ikke Win32_volume - derfor dette tjek
+
+  set colitems2 = objwmiservice.execquery("Select * From Meta_Class Where __Class = 'Win32_volume'")
+
+  if colitems2.count <> 0 then
+  
+  ' Mount points
+
+  Set colItems2 = objWMIService.ExecQuery("Select * from Win32_Volume where driveletter=null and caption <> DeviceId") 
+
+  For Each objItem2 In colItems2
+   	
+  if not Isnull(objItem2.Capacity) then
+
+    FGC = "FFFFFF"
+    UsedSpacePCT = Round((objItem2.Capacity-objItem2.FreeSpace) / objItem2.Capacity,2) * 100
+    If UsedSpacePCT >= DiskWarning then
+       If UsedSpacePCT >= DiskCritical then
+          BGC = "FF0000"
+          BGC2 = "ffdddd"
+       Else
+          BGC = "EEDD11"
+          BGC2 = "ffffcc"
+          FGC = "000000"
+       End if
+    Else
+       BGC = "009900"
+       BGC2 = "ffffff"
+    End if
+
+    'Driveinfo table
+    THtml = THtml & "<tr align=right bgcolor=#" & BGC2 & ">"
+    'Driveletter
+    THtml = THtml & "<td>" & objItem2.Name & "</td>"
+    'Volume name
+    THtml = THtml & "<td> " & objItem2.Label & "</td>"
+    'Drive type
+    THtml = THtml & "<td> " & "Mount Point" & "</td>"
+    'Drive filsystem
+    THtml = THtml & "<td> " & objItem2.FileSystem & "</td>"
+    'Drive Blocksize
+    THtml = THtml & "<td> " & objItem2.Blocksize & "</td>"
+    'Drive totalsize
+    THtml = THtml & "<td>" & Round(objItem2.Capacity/1024/1024/1024,3) & "</td>"
+    'Drive used
+    THtml = THtml & "<td>" & Round((objItem2.Capacity-objItem2.FreeSpace)/1024/1024/1024,3) & "</td>"
+    'Drive freespace
+    THtml = THtml & "<td>" & Round(objItem2.FreeSpace/1024/1024/1024,3) & "</td>"
+    'Drive used percent
+    THtml = THtml & "<td>" & Round((objItem2.Capacity-objItem2.FreeSpace) / objItem2.Capacity,2) * 100 & "</td>"
+    THtml = THtml & "</tr>"
+  
+   'Driveinfo graph
+
+    GHtml = GHtml & objItem2.Name
+    GHtml = GHtml & "<table border=0 cellspacing=0 cellpadding=0 height=15 width=100%><tr><td bgcolor=#CCCCCC>"
+    GHtml = GHtml & "   <table width=" & Round((objItem2.Capacity-objItem2.FreeSpace) / objItem2.Capacity,2) * 100 _
+                  &           "% border=0 cellspacing=0 cellpadding=0 height=100%><tr><td bgcolor=#" & BGC & ">"
+    GHtml = GHtml &     "<div align=center><b><font face=Verdana Size=1 color=#" & FGC & ">"
+    GHtml = GHtml &           "Used " & Round((objItem2.Capacity-objItem2.FreeSpace) / objItem2.Capacity,2) * 100 & "%"
+    GHtml = GHtml & "   </font></b></div>"
+    GHtml = GHtml & "   </td></tr></table>"
+    GHtml = GHtml & "</td></tr></table>"
+  
+  end if
+
+  Next
+  
+end if
+
+  'Closing Table and Graph
+  GHtml = GHtml & "</table><p><p>"
+  THtml = THtml & "</td></tr></table><p><p>"
+
+end function
+
+Function PartitionInfo(objWMIService)
+  
+ '---------------------------------
+ ' Hent Partition Info
+ '---------------------------------
+
+
+  ' WMI Query to the Win32_Partition
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_DiskPartition")
+
+  ' Prepare Table header
+  PHtml = PHtml & "<table border=1 cellspacing=1>"
+  PHtml = PHtml & "<caption><font=size=1>Partition Info</caption>"
+  PHtml = PHtml & "<tr align=right>"
+  PHtml = PHtml & "<th>Index</th>"
+  PHtml = PHtml & "<th>Name</th>"
+  PHtml = PHtml & "<th>Blocksize</th>"
+  PHtml = PHtml & "<th>Partition Starting Offset</th>"
+  PHtml = PHtml & "<th>Drive letter</th>"
+  PHtml = PHtml & "<th>Comment</th>"
+  PHtml = PHtml & "</tr>"
+
+  Dim Offset
+
+  For each objPartition in colItems
+  name = " "
+  drive_letter = "&nbsp;"
+  'Use partition device id to find logical disk
+    Set wmiLogicalDisks = objWMIService.ExecQuery _
+        ("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" _
+        & objPartition.Name & "'} WHERE AssocClass = Win32_LogicalDiskToPartition") 
+
+    For Each wmiLogicalDisk In wmiLogicalDisks
+		 drive_letter = wmiLogicalDisk.DeviceID  
+    Next 
+
+    ' Nogle OS har ikke Win32_volume - derfor OK med fejl her
+    On Error Resume Next
+
+	' Hent lige captionsname på disken !
+	Set colItems2 = objWMIService.ExecQuery("Select * from Win32_Volume where driveletter='" & drive_letter & "'")
+	For Each objItem2 In colItems2
+		Name = objItem2.Label
+	Next
+
+    PHtml = PHtml & "<tr align=right>"
+    PHtml = PHtml & "<td>" & objPartition.Index
+    PHtml = PHtml & "<td>" & objPartition.Name
+    PHtml = PHtml & "<td>" & objPartition.BlockSize
+    PHtml = PHtml & "<td>" & objPartition.StartingOffset
+	Phtml = PHtml & "<td>" & drive_letter  
+
+    offset = mmod(objPartition.StartingOffset,64)
+
+    if offset = 0 then
+      comment = "&nbsp;"
+    else
+      comment = "<font color=red>OBS OBS - not a multiplum of 64       "
+    end if
+
+    PHtml = PHtml & "<td>" & Comment
+    PHtml = PHtml & "</tr>"
+
+  Next
+
+  PHtml = PHtml & "</table>"   
+
+end function
+
+Function OSInfo(objWMIService)
+ '---------------------------------
+ ' Hent diverse OS informationer
+ '---------------------------------
+
+  Ohtml = "<p><br><h3>OS information</h3>"
+
+  ' WMI Query to the Win32_ComputerSystem
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_ComputerSystem")
+
+  For Each objItem in colItems
+      phys_memory = objItem.TotalPhysicalMemory
+      system_type = objItem.SystemType
+	  model = objItem.Model
+	  make = objItem.Manufacturer
+  next
+
+  ' WMI Query to the Win32_OperatingSystem
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_OperatingSystem")
+
+  For Each objItem in colItems
+
+    operating_system = objItem.Caption
+    version = objItem.Version
+    sp = objItem.CSDVersion
+    machine = objItem.CSName
+    ' msgbox objItem.LastBootUpTime
+
+    'Windows Build 3790 + SP2 og opefter har workingsetsize i MB istf. i K
+    build = mid(version,InstrRev(version, ".")+1)
+
+    if build > 3790 then
+       div = "M"
+    else
+       div = "K"
+    end if
+
+    if build = 3790 and sp = "Service Pack 2" then
+       div = "M"
+    end if
+
+    ohtml = ohtml & "<table border=0>" & _
+        "<tr><td>Machine Name : <td> " & objItem.CSName & "</tr>" & _
+        "<tr><td>System Type :<td> " & system_type &  "</tr>" &_
+		"<tr><td>Model :<td> " & make & " - " & model &  "</tr>" &_
+        "<tr><td>&nbsp;<td></tr>" &_
+        "<tr><td>Operating System :<td> " & objItem.Caption & "</tr>" & _
+        "<tr><td>Version : <td>" & objItem.Version & VbCr & "</tr>" &_
+        "<tr><td>Service Pack :<td> " & objItem.CSDVersion &  "</tr>" &_
+        "<tr><td>&nbsp;<td></tr>" &_
+        "<tr><td>Total Physical Memory (Mb) :<td> " & formatnumber(phys_memory/1024/1024,0) & "</tr>" &_
+        "<tr><td>Free  Physical Memory (Mb) :<td> " & formatnumber(objItem.freePhysicalMemory/1024,0) & _
+        " &nbsp;&nbsp; - &nbsp;&nbsp; free " & formatnumber((objItem.freePhysicalMemory/1024*100)/(phys_memory/1024/1024),0) & " %" & "</tr>" &_
+        "<tr><td>Total Virtual Memory (Mb) : <td> "  & formatnumber(objItem.TotalVirtualMemorySize/1024,0) & "</tr>" &_
+        "<tr><td>Free  Virtual Memory (Mb) : <td> "  & formatnumber(objItem.FreeVirtualMemory/1024,0) & _
+        " &nbsp;&nbsp; - &nbsp;&nbsp; free " & formatnumber((objItem.FreeVirtualMemory/1024*100)/(objItem.TotalVirtualMemorySize/1024),0) & " %" & "</tr>"
+
+    'ingen PAE info i gamle os'ere
+    if InStr(operating_system, "Server 2003") > 0  _
+       or InStr(operating_system, "2000") > 0 _
+       or InStr(operating_system, "XP") > 0 then
+       ohtml = ohtml & "<tr><td>3GB & userva & PAE:<td> " & find3gb(objItem.MaxProcessMemorySize) & "</tr>"
+    else
+       ohtml = ohtml & "<tr><td>3GB & userva & PAE:<td> " & find3gb(objItem.MaxProcessMemorySize) &  PAE(objItem.PAEEnabled) & "</tr>"
+    end if
+
+    ohtml = ohtml & _
+        "<tr><td>&nbsp;<td></tr>" &_
+        "<tr><td>Free Space In Paging Files (Mb) : &nbsp;&nbsp;<td> " & formatnumber(objItem.FreeSpaceInPagingFiles/1024,0) & "</tr>" &_
+        "<tr><td>&nbsp;<td></tr>" &_
+        "<tr><td>Install date :<td> " & WMIDateStringToDate(objItem.InstallDate) & "</tr>" &_
+        "<tr><td>Last Boot :<td> "    & WMIDateStringToDate(objItem.LastBootUpTime) & "</tr>"
+  Next
+ 
+  Set colProcessors = objWMIService.ExecQuery("Select * from Win32_Processor")                                                                                        
+  For Each objProcessor in colProcessors  
+       ohtml = ohtml & _
+	     "<tr><td>&nbsp;<td></tr>" &_
+  		 "<tr><td>CPU Name: <td> " & objProcessor.name & "</tr>" &_
+		 "<tr><td>CPU Desc: <td> " & objProcessor.Description & "</tr>" &_
+		 "<tr><td>CPU Max clock: <td> " & objProcessor.MaxClockSpeed & "</tr>" 
+		if InStr(operating_system, "Server 2003") > 0  _
+			or InStr(operating_system, "2000") > 0 _
+			or InStr(operating_system, "XP") > 0 then
+			   ohtml = ohtml & _
+				   "<tr><td>Load % : <td>" & objProcessor.LoadPercentage & "</tr>"
+		else
+			   ohtml = ohtml & _
+				   "<tr><td>CPU Cores: <td> " & objProcessor.NumberOfCores & "</tr>"  & _
+				   "<tr><td>Load % : <td>" & objProcessor.LoadPercentage & "</tr>"
+		end if
+  next
+  
+  Set colCompSys = objWMIService.ExecQuery("Select * from Win32_ComputerSystem")
+  For Each objCS in colCompSys
+    ' XP, Windows Server 2000 & 2003 og XP kender ikke til de logiske processorer :-((
+    if InStr(operating_system, "Server 2003") > 0  _
+       or InStr(operating_system, "2000") > 0 _
+       or InStr(operating_system, "XP") > 0 then
+     ohtml = ohtml & _
+	     "<tr><td>&nbsp;<td></tr>" &_
+         "<tr><td>NumberOfProcessors : <td> " & objCS.NumberOfProcessors & "</tr>"
+  else
+     ohtml = ohtml & _
+	     "<tr><td>&nbsp;<td></tr>" &_
+         "<tr><td>NumberOfProcessors / Logical : <td> " & objCS.NumberOfProcessors & " / " & objCS.NumberOfLogicalProcessors & "</tr>" 
+  end if
+  Next
+	
+  On Error Resume Next
+  'Powerschema
+ 
+  strComputer = "."
+  Set objWMIService2 = GetObject("winmgmts:\\" & strComputer & "\root\CIMV2\power") 
+  Set colItems = objWMIService2.ExecQuery("SELECT * FROM Win32_PowerPlan where IsActive=True",,48) 
+
+  For Each objItem in colItems 
+    powerelement = ""
+	powerdesc    = ""
+	if objItem.Description = "" then
+	   powerdesc = ""
+	else
+	   powerdesc = " / " & objItem.Description
+	end if
+	
+    if objItem.ElementName <> "Maximum Performance" then
+		powerelement = "<font color=blue>" & objItem.ElementName & " " & powerdesc & "</font></tr>"
+	else
+		powerelement = objItem.ElementName & " " & objItem.Description & "</tr>"
+	end if
+	
+    ohtml = ohtml & _
+	     "<tr><td>Power Shema: <td>" & powerelement 
+  Next
+
+ 'Pagefiles
+
+  'Pagefile usage
+  Set colPagefiles = objWMIService.ExecQuery("Select * from Win32_PageFileUsage")
+  For Each colPagefile in colPagefiles
+      ohtml = ohtml & _
+         "<tr><td>&nbsp;<td></tr>" &_
+         "<tr><td>Pagefile: <td>" & colPagefile.caption  & "</tr>" & _
+         "<tr><td>AllocatedBaseSize (Mb): <td>" & colPagefile.AllocatedBaseSize & "</tr>" & _
+         "<tr><td>Current Usage (Mb): <td>" & colPagefile.currentUsage  & "</tr>" & _
+         "<tr><td>Peak Usage (Mb): <td>" & colPagefile.PeakUsage & "</tr>"
+  Next
+
+  ohtml = ohtml & "</table>"
+  
+    '---------  W I N D O W S  -  U P D A T E ----------
+	
+   Const HKEY_LOCAL_MACHINE = &H80000002
+   dwValue = 1
+   strComputer = "."
+
+   Set oReg=GetObject( "winmgmts:{impersonationLevel=impersonate}!\\"  &  strComputer & "\root\default:StdRegProv") 
+
+   strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update"
+   strValueName = "AUOptions"
+
+   oReg.GetDWORDValue    HKEY_LOCAL_MACHINE, strKeyPath, strValueName, dwValue
+
+   dim s
+   Select case dwValue
+     Case 1
+          S = "<font color=red>Never look for updates (1)</font>"
+     Case 2
+          S = "Look for updates and let user choose which ones to download and install (2)"
+     Case 3
+          S = "Download updates and let user choose which ones to install (3)"
+     Case 4
+          S = "Download and install updates according to schedule (4)"
+     Case 5 
+          S = "Automatic updates are required, but can be configured by end users ?? (5)"
+     Case Else
+          S = "Hmmm ..." & dwValue & " does not exist officialy  ...."
+   End Select
+
+   strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\Results\Detect"
+   strValueName = "LastSuccessTime"
+
+   oReg.GetStringValue    HKEY_LOCAL_MACHINE, strKeyPath, strValueName, detectdato
+
+   strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\Results\Download"
+   strValueName = "LastSuccessTime"
+
+   oReg.GetStringValue    HKEY_LOCAL_MACHINE, strKeyPath, strValueName, downloaddato
+
+   strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\Results\Install"
+   strValueName = "LastSuccessTime"
+
+   oReg.GetStringValue    HKEY_LOCAL_MACHINE, strKeyPath, strValueName, installdato
+
+   ohtml = ohtml & "<p><br><h3>Windows Update Info</h3>"
+   ohtml = ohtml & "<table border=0>"
+
+   ohtml = ohtml & "<tr><td>" & "AutoUpdate setting  : &nbsp;&nbsp;&nbsp;<td>"  & s
+   ohtml = ohtml & "<tr><td>" & "Last detect    : &nbsp;&nbsp;&nbsp;<td>"  & detectdato & " GMT"
+   ohtml = ohtml & "<tr><td>" & "Last download  : &nbsp;&nbsp;&nbsp;<td>"  & downloaddato & " GMT"
+   ohtml = ohtml & "<tr><td>" & "Last install   : &nbsp;&nbsp;&nbsp;<td>"  & installdato & " GMT"
+   
+   
+  ' Set updateSession = CreateObject("Microsoft.Update.Session") 
+  ' Set updateSearcher = updateSession.CreateupdateSearcher()         
+  ' Set searchResult = updateSearcher.Search("IsAssigned=1 and IsInstalled=0 and IsHidden=0 and Type='Software'")
+  
+'	If searchResult.Updates.Count <> 0 Then  
+'	    Reboot = "No"
+'		For i = 0 To searchResult.Updates.Count - 1 
+'			Set update = searchResult.Updates.Item(i) 
+'			if update.InstallationBehavior.RebootBehavior <> 0 then Reboot = "Yes" end if
+'		Next 
+'	End If
+	
+'	If searchResult.Updates.Count <> 0 Then  
+'		ohtml = ohtml & "<tr><td>&nbsp;</tr><tr><td>WindowsUpdates :<td>"  &  searchResult.Updates.Count & " required, Reboot " & Reboot
+	'	For i = 0 To searchResult.Updates.Count - 1 
+	'		Set update = searchResult.Updates.Item(i) 
+	'		'if update.InstallationBehavior.RebootBehavior <> 0 then update = "*" & update end if
+	'		ohtml = ohtml & "<tr><td>&nbsp;<td>" & update  
+	'	Next 
+'	End If
+	
+'	Set updateSession = CreateObject("Microsoft.Update.Session") 
+'   Set updateSearcher = updateSession.CreateupdateSearcher()         
+'    Set searchResult = updateSearcher.Search("IsAssigned=0 and IsInstalled=0 and IsHidden=0 and Type='Software'")
+  
+'	If searchResult.Updates.Count <> 0 Then  
+'	    Reboot = "No"
+'		For i = 0 To searchResult.Updates.Count - 1 
+'			Set update = searchResult.Updates.Item(i) 
+'			if update.InstallationBehavior.RebootBehavior <> 0 then Reboot = "Yes" end if
+'		Next 
+'	End If
+	
+'	If searchResult.Updates.Count <> 0 Then  
+'		ohtml = ohtml & "<tr><td>&nbsp;<td>"  &  searchResult.Updates.Count & " optional, Reboot " & Reboot
+	'	'For i = 0 To searchResult.Updates.Count - 1 
+	'		Set update = searchResult.Updates.Item(i) 
+	'		'if update.InstallationBehavior.RebootBehavior <> 0 then update = "*" & update end if
+	'		ohtml = ohtml & "<tr><td>&nbsp;<td>" & update 
+	'	Next 
+'	End If
+   
+
+   ohtml = ohtml & "</table>"
+
+  '---------  I P - I N F O ----------
+
+  ohtml = ohtml & "<p><br><h3>IP Info</h3>"
+  ohtml = ohtml & "<table border=0>"
+
+  ' VMI Query to the Win32_NetworkAdapterConfiguration
+  Set colItems = objWMIService.ExecQuery ("SELECT Description, ipaddress FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True")
+
+  For Each objItem in colItems
+      ohtml = ohtml & "<tr><td>" &objItem.Description & ": &nbsp;&nbsp;&nbsp;<td>" & objItem.IPAddress(0) & "</tr>"
+  Next
+
+  ohtml = ohtml & "</table>"
+  
+end function
+
+Function DBInfo(objWMIService)
+  '---------  D A T A B A S E R ----------
+
+  dbhtml = "<p><br><h3>Database informationer</h3><table border=0>"
+
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_Process Where Name = 'oracle.exe' or Name = 'sqlservr.exe' or name = 'mysqld.exe'")
+
+  For Each objItem in colItems
+      'peak ws size kan være negativ -> 0 istf.
+
+      peakws =  CDbl(objItem.PeakWorkingSetSize)
+
+      'if peakws < 0 then 0 end if
+
+      if div = "M" then
+         peakws = peakws / 1024
+      else
+         peakws = peakws / 1024 / 1024
+      end if
+
+      dbhtml = dbhtml & "<tr><td> Server process : &nbsp;&nbsp;&nbsp;<td><b>" & objItem.Name & "</b> (" & objItem.ProcessId & _
+                      ") Threads: " & objItem.ThreadCount & "</tr>"
+      dbhtml = dbhtml & "<tr><td> Virtual Size / Peak (Mb) : &nbsp;&nbsp;&nbsp;<td>" & formatnumber(objItem.VirtualSize/1024/1024,0) & _
+                                            " / " & formatnumber(objItem.PeakVirtualSize/1024/1024,0) & "</tr>"
+      dbhtml = dbhtml & "<tr><td> WorkingSet Size / Peak (Mb): &nbsp;&nbsp;&nbsp;<td>" & formatnumber(objItem.WorkingSetSize/1024/1024,0) & _
+                                            " / " & formatnumber(peakws,0) & "</tr>"
+      dbhtml = dbhtml & "<tr><td>&nbsp;<td></tr>"
+  Next
+
+  dbhtml = dbhtml & "</table>"
+  
+End function
+
+Function ApServInfo(objWMIService)
+  '---------  A P P S E R V E R S ----------
+
+  aphtml = "<p><br><h3>Application Servers (IAS/WLS) informationer</h3><table border=0>"
+
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_Process Where Name = 'beasvc.exe' or name = 'beasvcX64.exe' or Name = 'opmn.exe'")
+
+  app_found = False
+
+  For Each objItem in colItems
+      app_found = True
+      'peak ws size kan være negativ -> 0 istf.
+
+      peakws =  CDbl(objItem.PeakWorkingSetSize)
+
+      'if peakws < 0 then 0 end if
+
+      if div = "M" then
+         peakws = peakws / 1024
+      else
+         peakws = peakws / 1024 / 1024
+      end if
+
+      aphtml = aphtml & "<tr><td> Server process : &nbsp;&nbsp;&nbsp;<td><b>" & objItem.Name & "</b> (" & objItem.ProcessId & ")</tr>"
+      aphtml = aphtml & "<tr><td> Virtual Size / Peak (Mb) : &nbsp;&nbsp;&nbsp;<td>" & formatnumber(objItem.VirtualSize/1024/1024,0) & _
+                                            " / " & formatnumber(objItem.PeakVirtualSize/1024/1024,0) & "</tr>"
+      aphtml = aphtml & "<tr><td> WorkingSet Size / Peak (Mb): &nbsp;&nbsp;&nbsp;<td>" & formatnumber(objItem.WorkingSetSize/1024/1024,0) & _
+                                            " / " & formatnumber(peakws,0) & "</tr>"
+      aphtml = aphtml & "<tr><td>&nbsp;<td></tr>"
+  Next
+
+  ' tæl antallet af forms/reports processer på serveren og sum deres memoryforbrug
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_Process Where Name = 'frmweb.exe'")
+
+  antal = 0
+  vs    = 0
+  wss   = 0
+
+  For Each objItem in colItems
+      antal = antal + 1
+      vs    = vs  + objItem.VirtualSize
+      wss   = wss + objItem.WorkingSetSize
+  Next
+
+  aphtml = aphtml & "<tr><td> Antal Forms/Reports : &nbsp;&nbsp;&nbsp;<td><b>" & antal & "</tr>"
+
+  if antal > 0 then
+     aphtml = aphtml & "<tr><td> Virtual Size (Mb) / avg : &nbsp;&nbsp;&nbsp;<td>" & formatnumber(vs/1024/1024,0) & _
+                      " / " & formatnumber((vs/antal)/1024/1024,0) & "</tr>"
+     aphtml = aphtml & "<tr><td> WorkingSet Size (Mb) / avg : &nbsp;&nbsp;&nbsp;<td>" & formatnumber(wss/1024/1024,0) & _
+                    " / " & formatnumber((wss/antal)/1024/1024,0) & "</tr>"
+  end if
+
+  aphtml = aphtml & "</table>"
+ 
+
+  ' Var der appservers på denne server?
+  if app_found then
+     aphtml = aphtml
+  else
+     aphtml = ""
+  end if
+
+End Function
+
+Function ServiceInfo(objWMIService)
+
+  '---------  S E R V I C E S ----------
+
+  shtml = "<h3>Service informationer</h3><table border=0>"
+
+  Set colItems = objWMIService.ExecQuery ("Select * from Win32_Service")
+
+  For Each objItem in colItems
+      'vi skal kun kigge på Oracle/Mssql services
+      If InStr(ucase(objItem.Name), "ORACLE") > 0 or InStr(ucase(objItem.Name), "MSSQL") > 0 or _
+         InStr(ucase(objItem.PathName), "OPMN") > 0 or InStr(ucase(objItem.Name), "MYSQL") > 0 or _    
+ 	 InStr(ucase(objItem.Name), "BEA") > 0 Then
+
+     ' find start dato i processerne
+     startdate = ""
+
+     if objItem.State = "Running" then
+        sql = "Select * from Win32_Process where ProcessId = " & objItem.ProcessId
+        set colItemsproc = objWMIService.ExecQuery (sql)
+
+      for each objItemProc in colItemsproc
+        startdate = " since " & WMIDateStringToDate(objItemProc.CreationDate)
+      next
+     end if
+
+         shtml = shtml & "<tr><td> Name : &nbsp;&nbsp;&nbsp;<td><b>" & objItem.Name & "</b></tr>"
+         shtml = shtml & "<tr><td> Path : &nbsp;&nbsp;&nbsp;<td>" & objItem.PathName & "</tr>"
+         shtml = shtml & "<tr><td> Process / State / Start mode :  &nbsp;&nbsp;&nbsp;<td>" & _
+                                 objItem.ProcessId & " / " & objItem.State  &startdate &  " / " & _
+                   objItem.StartMode  & "</tr>"
+         shtml = shtml & "<tr><td>&nbsp;<td></tr>"
+    end if
+  Next
+
+  shtml = shtml & "</table>"
+  
+End Function
+
+Function ProcessInfo(objWMIService)
+
+  '-----------------------  P R O C E S S E R  ---------------------------------------'
+   prhtml = "<h3>Top 10 Processes - WorkingSetSize</h3><table border=1>"
+	
+   On Error Resume Next
+
+   Const wbemFlagReturnImmediately = &h10
+   Const wbemFlagForwardOnly = &h20
+
+   arrComputers = Array(".")
+
+   For Each strComputer In arrComputers
+		        
+		' -- If we dont use the next line we Get: "Non-nullable column cannot be updated to Null"
+		
+		On Error Resume Next
+		Const adVarChar = 200
+		Const adUnsignedBigInt = 21
+		Const MaxCharacters = 255
+
+		Set DataList = CreateObject("ADOR.Recordset")
+		DataList.Fields.Append "Name", adVarChar, MaxCharacters
+		DataList.Fields.Append "WorkingSetSize", adUnsignedBigInt
+		DataList.Fields.Append "PeakWorkingSetSize", adVarChar, MaxCharacters
+		DataList.Fields.Append "Commandline", adVarChar, MaxCharacters
+		DataList.Fields.Append "CreationDate", adVarChar, MaxCharacters
+		DataList.Fields.Append "ProcessId", adVarChar, MaxCharacters
+		DataList.Open
+		        
+		'Set objFSO = CreateObject("Scripting.FileSystemObject")
+		'Set objLogFile = objFSO.CreateTextFile("C:\mette\mette.html", True)
+		        
+		prhtml = prhtml & "<table border=1>"
+		prhtml = prhtml & "<tr><th>Name</th><th>WorkingSetSize</th>" & _
+			"<th>PeakWS Size</th><th>Commandline</th><th>Creation<br>Date</th><th>PID</th></tr>"
+		
+		Set objWMI = GetObject("winmgmts:{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+		Set objProcesses = objWMI.ExecQuery("Select * from Win32_Process")
+		        
+		For Each Process In objProcesses
+			DataList.AddNew
+			DataList("Name") = Process.Name
+			DataList("WorkingSetSize") = CDbl(Process.WorkingSetSize)
+			if div = "M" then
+			   DataList("PeakWorkingSetSize") = Process.PeakWorkingSetSize
+			else
+			    DataList("PeakWorkingSetSize") = Process.PeakWorkingSetSize / 1024
+            end if
+			'DataList("PeakWorkingSetSize") = Process.PeakWorkingSetSize
+			DataList("Commandline") = Process.Commandline
+			DataList("CreationDate") = Process.CreationDate
+			DataList("ProcessId") = Process.ProcessId
+			DataList.Update
+		Next
+		
+		DataList.MoveFirst
+		Do While Not DataList.EOF
+			AllRunningTotal = CDbl(DataList.Fields.Item("WorkingSetSize").value) + CDbl(AllRunningTotal)
+			DataList.MoveNext
+		Loop
+		
+		DataList.Sort = "WorkingSetSize DESC"
+		DataList.MoveFirst
+		i = 0
+		RunningTotal = 0
+
+		Do Until i = 10
+		    prhtml = prhtml & "<tr align=right>" 
+			prhtml = prhtml & "<td align=left>" & DataList.Fields.Item("Name") & "</td>"
+			prhtml = prhtml & "<td>" & FormatNumber(FormatNumber(DataList.Fields.Item("WorkingSetSize"), 0) / 1024, 0) & "</td>"
+			RunningTotal = CDbl(DataList.Fields.Item("WorkingSetSize").value) + CDbl(RunningTotal)
+			prhtml = prhtml & "<td>" & FormatNumber(FormatNumber(DataList.Fields.Item("PeakWorkingSetSize"), 0) / 1 , 0) & "</td>"
+			prhtml = prhtml & "<td align=left>" & DataList.Fields.Item("Commandline") & "</td>"
+			prhtml = prhtml & "<td>" & WMIDateStringToDate(DataList.Fields.Item("CreationDate")) & "</td>"
+			prhtml = prhtml & "<td>" & DataList.Fields.Item("ProcessId") & "</td></tr>"
+			DataList.MoveNext
+
+			i = i + 1
+		Loop		
+		
+		prhtml = prhtml &"<tr><td><b>TOTAL:</b></td>"
+		prhtml = prhtml &"<td align=right>" & FormatNumber(FormatNumber(RunningTotal, 0) / 1024, 0) & "</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td></tr>"
+		
+		prhtml = prhtml &"<tr><td><b>TOTAL IN USE:</b></td>"
+		prhtml = prhtml &"<td align=right>" & FormatNumber(FormatNumber(AllRunningTotal, 0) / 1024, 0) & "</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td>"
+		prhtml = prhtml &"<td>&nbsp;</td></tr>"
+			        
+		Set objWMI = Nothing 
+   Next
+
+   prhtml = prhtml & "</table>"
+ 
+End Function
+
+Function DeviceInfo(objWMIService)
+
+  '------------------------------- DEVICE DRIVERS -----------------------------------
+  
+  Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_PnPEntity where Status = 'Error'") 
+  
+  if colItems.count <> 0 then
+     dhtml = "<h3>Device drivers in error state</h3><table border=1>"  
+     dhtml = dhtml & "<tr><th>Driver<th>Status</tr>"
+  end if
+  
+  For Each objItem in colItems 
+    dhtml = dhtml & "<tr>"
+    dhtml = dhtml & "<td>" & objItem.Caption
+    dhtml = dhtml & "<td>" & objItem.Status
+	dhtml = dhtml & "</tr>"
+  Next
+  
+  dhtml = dhtml & "</table>"
+  
+End Function
+
+</script>
+</job>

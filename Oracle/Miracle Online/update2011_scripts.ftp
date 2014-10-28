@@ -1,0 +1,14 @@
+open ftp.miracleas.dk
+mirtool
+online
+get online/check2/check_start.sql
+get online/check2/check2.sql
+get online/check2/check2_standby.sql
+get online/check2/GetStorage_info.wsf
+get online/check2/showdate.vbs
+get online/check2/spool.sql
+get online/check2/check_maintenance.sql
+get online/check2/oebs_start.sql
+get online/check2/oebs_tjek.sql
+get online/check2/nooebs_tjek.sql
+bye

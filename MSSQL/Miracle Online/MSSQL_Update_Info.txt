@@ -1,0 +1,21 @@
+***********************************************************************
+*                        SQL SERVER ONLINECHECK                       *
+***********************************************************************
+
+=======================================================================
+  RELEASED CHECK
+=======================================================================
+Release info for version 1.5.2 
+
+ 5th October 2014:
+====================
+This version consists of the following changes:
+
+ - Added color codes in full & transaction log backup table.
+ - Added runtime trace info to global temp table (##MT) and trace to MO_Trace file.
+ - Added duration information to SQL Agent info.
+ - Added "optimize for adhoc .." parameter advice in plancache information.
+ - Updated "idle" server wait.
+ - Fixed bug in checkdb output.
+ - Fixed bug in plancache calculation.
+ 

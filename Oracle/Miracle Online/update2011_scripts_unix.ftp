@@ -1,0 +1,13 @@
+open ftp.miracleas.dk
+user mirtool online 
+cd online/check2
+ascii
+get check_start.sql check_start.sql
+get check2.sql check2.sql
+get check2_standby.sql check2_standby.sql
+get spool.sql spool.sql
+get check_maintenance.sql check_maintenance.sql
+get oebs_start.sql oebs_start.sql
+get oebs_tjek.sql oebs_tjek.sql
+get nooebs_tjek.sql nooebs_tjek.sql
+bye

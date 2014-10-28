@@ -1,0 +1,6 @@
+open ftp.miracleas.dk
+mirtool
+online
+cd online/check2
+get update2011_scripts.ftp
+bye
