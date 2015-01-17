@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "WaitCollectTest", "WaitCollectTest\WaitCollectTest.rptproj", "{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Debug|Default.ActiveCfg = Debug
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Debug|Default.Build.0 = DebugLocal
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Debug|Default.Deploy.0 = DebugLocal
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.DebugLocal|Default.Build.0 = DebugLocal
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Release|Default.ActiveCfg = Release
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Release|Default.Build.0 = Release
+		{2C01B51F-3D2D-4C8A-9771-A0E847CF380D}.Release|Default.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

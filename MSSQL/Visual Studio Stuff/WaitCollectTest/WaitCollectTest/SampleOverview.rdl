@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <Height>6.52083in</Height>
+    <Style />
+  </Body>
+  <Width>13.70833in</Width>
+  <Page>
+    <PageHeight>29.7cm</PageHeight>
+    <PageWidth>21cm</PageWidth>
+    <LeftMargin>2cm</LeftMargin>
+    <RightMargin>2cm</RightMargin>
+    <TopMargin>2cm</TopMargin>
+    <BottomMargin>2cm</BottomMargin>
+    <ColumnSpacing>0.13cm</ColumnSpacing>
+    <Style />
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="SharedSource">
+      <DataSourceReference>DataSource</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>47ebd85c-2e9a-49c3-95f8-0c8559f09f64</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="Samples">
+      <Query>
+        <DataSourceName>SharedSource</DataSourceName>
+        <CommandText>;with snapinfo as (
+select SSN, SST, MACHINE, BOOT, 
+case
+  when CONVERT(datetime, boot) &lt; LEAD(CONVERT(datetime,BOOT),1,0) over (order by sst) then 1
+  end as BOOTCOUNT
+from Trend_Snaps
+)
+SELECT CONVERT(varchar, SST, 105) AS DateStamp, MIN(SST) AS LowSample, MAX(SST) AS HighSample, COUNT(*) AS Samples,
+       COUNT(BOOTCOUNT) as BootCount
+FROM snapinfo
+GROUP BY CONVERT(varchar, SST, 105)
+ORDER BY DateStamp</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="DateStamp">
+          <DataField>DateStamp</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LowSample">
+          <DataField>LowSample</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="HighSample">
+          <DataField>HighSample</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Samples">
+          <DataField>Samples</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="BootCount">
+          <DataField>BootCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <rd:ReportUnitType>Cm</rd:ReportUnitType>
+  <rd:ReportID>71a8fa59-5952-452d-bf0e-1113eae88a06</rd:ReportID>
+</Report>

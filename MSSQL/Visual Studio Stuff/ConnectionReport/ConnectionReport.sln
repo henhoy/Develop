@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "ConnectionReport", "ConnectionReport\ConnectionReport.rptproj", "{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Debug|Default.ActiveCfg = Debug
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Debug|Default.Build.0 = DebugLocal
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Debug|Default.Deploy.0 = DebugLocal
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.DebugLocal|Default.Build.0 = DebugLocal
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Release|Default.ActiveCfg = Release
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Release|Default.Build.0 = Release
+		{B6357B9E-9EC1-40B1-8BEB-4A639F0AA0DA}.Release|Default.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

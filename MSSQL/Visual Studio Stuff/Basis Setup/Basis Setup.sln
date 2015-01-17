@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "Basis Setup", "Basis Setup\Basis Setup.dtproj", "{34FEC3E4-3573-480C-B43E-ED8F72CC2E3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+		Test|Default = Test|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34FEC3E4-3573-480C-B43E-ED8F72CC2E3B}.Development|Default.ActiveCfg = Development
+		{34FEC3E4-3573-480C-B43E-ED8F72CC2E3B}.Development|Default.Build.0 = Development
+		{34FEC3E4-3573-480C-B43E-ED8F72CC2E3B}.Test|Default.ActiveCfg = Test
+		{34FEC3E4-3573-480C-B43E-ED8F72CC2E3B}.Test|Default.Build.0 = Test
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

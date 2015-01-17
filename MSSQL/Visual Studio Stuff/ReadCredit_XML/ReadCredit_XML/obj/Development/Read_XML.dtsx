@@ -1,0 +1,1025 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/12/2014 2:48:06 PM"
+  DTS:CreationName="SSIS.Package.3"
+  DTS:CreatorComputerName="SQL2012"
+  DTS:CreatorName="SQL2012\Administrator"
+  DTS:DTSID="{EAA84D99-49A2-49B5-874A-6D4C5E16F447}"
+  DTS:ExecutableType="SSIS.Package.3"
+  DTS:LastModifiedProductVersion="11.0.2100.60"
+  DTS:LocaleID="1030"
+  DTS:ObjectName="Read_XML"
+  DTS:PackageType="5"
+  DTS:VersionBuild="13"
+  DTS:VersionGUID="{0BA8A9EF-0FEA-4314-AE42-97352449CABC}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">6</DTS:Property>
+  <DTS:Variables>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{763383FD-E6EC-47F3-AD59-7B8ADC66E805}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="Credit_Update_Done_Files">
+      <DTS:VariableValue
+        DTS:DataType="8">E:\SSIS_FTP\Done</DTS:VariableValue>
+    </DTS:Variable>
+    <DTS:Variable
+      DTS:CreationName=""
+      DTS:DTSID="{67D6B3FD-8CBD-4C77-9B9D-4F96E4029169}"
+      DTS:IncludeInDebugDump="2345"
+      DTS:Namespace="User"
+      DTS:ObjectName="Credit_update_file">
+      <DTS:VariableValue
+        DTS:DataType="8"
+        xml:space="preserve"></DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Execute SQL Task"
+      DTS:CreationName="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{E3397C19-A064-448E-826C-696683351335}"
+      DTS:ExecutableType="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Execute SQL Task"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2012; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{63A5A3D1-1F9E-4980-8A24-C60BE8DAF8BA}"
+          SQLTask:SqlStatementSource="truncate table [dbo].[Credit_Update_Info]" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Read SSIS_FTP Credit_update XML"
+      DTS:CreationName="STOCK:FOREACHLOOP"
+      DTS:Description="Foreach Loop Container"
+      DTS:DTSID="{06A0DE88-4F3A-4831-A80C-756F478BD733}"
+      DTS:ExecutableType="STOCK:FOREACHLOOP"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Read SSIS_FTP Credit_update XML">
+      <DTS:ForEachEnumerator
+        DTS:CreationName="DTS.ForEachFileEnumerator.3"
+        DTS:DTSID="{EEB58A2D-2844-4B64-9D12-27B3F6B62268}"
+        DTS:ObjectName="{EEB58A2D-2844-4B64-9D12-27B3F6B62268}">
+        <DTS:ObjectData>
+          <ForEachFileEnumeratorProperties>
+            <FEFEProperty
+              Folder="E:\SSIS_FTP" />
+            <FEFEProperty
+              FileSpec="Credit_update*.XML" />
+            <FEFEProperty
+              FileNameRetrievalType="0" />
+            <FEFEProperty
+              Recurse="0" />
+          </ForEachFileEnumeratorProperties>
+        </DTS:ObjectData>
+      </DTS:ForEachEnumerator>
+      <DTS:Variables />
+      <DTS:Executables>
+        <DTS:Executable
+          DTS:refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task"
+          DTS:CreationName="SSIS.Pipeline.3"
+          DTS:Description="Data Flow Task"
+          DTS:DTSID="{6BC26E0F-6E78-4F2C-BEE4-6F70308CDE9C}"
+          DTS:ExecutableType="SSIS.Pipeline.3"
+          DTS:LocaleID="-1"
+          DTS:MaxErrorCount="1000"
+          DTS:ObjectName="Data Flow Task"
+          DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <pipeline
+              version="1">
+              <components>
+                <component
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column"
+                  componentClassID="{49928E82-9C4E-49F0-AABE-3812B82707EC}"
+                  contactInfo="Derived Column;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0"
+                  description="Creates new column values by applying expressions to transformation input columns. Create new columns or overwrite existing ones. For example, concatenate the values from the 'first name' and 'last name' column to make a 'full name' column."
+                  name="Derived Column"
+                  usesDispositions="true">
+                  <inputs>
+                    <input
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
+                      description="Input to the Derived Column Transformation"
+                      name="Derived Column Input">
+                      <externalMetadataColumns />
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Output]"
+                      description="Default Output of the Derived Column Transformation"
+                      exclusionGroup="1"
+                      name="Derived Column Output"
+                      synchronousInputId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Inputs[Derived Column Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[XML_File]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Computation"
+                          errorRowDisposition="FailComponent"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[XML_File]"
+                          name="XML_File"
+                          truncationRowDisposition="FailComponent">
+                          <properties>
+                            <property
+                              containsID="true"
+                              dataType="System.String"
+                              description="Derived Column Expression"
+                              name="Expression">@[User::Credit_update_file]</property>
+                            <property
+                              containsID="true"
+                              dataType="System.String"
+                              description="Derived Column Friendly Expression"
+                              expressionType="Notify"
+                              name="FriendlyExpression">@[User::Credit_update_file]</property>
+                          </properties>
+                        </outputColumn>
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Error Output]"
+                      description="Error Output of the Derived Column Transformation"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="Derived Column Error Output"
+                      synchronousInputId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Inputs[Derived Column Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination"
+                  componentClassID="{4ADA7EAA-136C-4215-8098-D7A7C27FC0D1}"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[Credit_Update_Info]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">3</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Connections[OleDbConnection]"
+                      connectionManagerID="{63A5A3D1-1F9E-4980-8A24-C60BE8DAF8BA}:external"
+                      connectionManagerRefId="Project.ConnectionManagers[SQL2012_SQL2012.TEST_DB]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Custno]"
+                          cachedDataType="ui2"
+                          cachedName="Custno"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Custno]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Custno]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Credit_group]"
+                          cachedDataType="wstr"
+                          cachedLength="255"
+                          cachedName="Credit_group"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Credit_group]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Credit_group]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Slip_amount]"
+                          cachedDataType="decimal"
+                          cachedName="Slip_amount"
+                          cachedScale="10"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Slip_amount]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Slip_amount]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[Balance]"
+                          cachedDataType="decimal"
+                          cachedName="Balance"
+                          cachedScale="10"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Balance]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Balance]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Custno]"
+                          dataType="i4"
+                          name="Custno" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Credit_group]"
+                          dataType="wstr"
+                          length="255"
+                          name="Credit_group" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Slip_amount]"
+                          dataType="numeric"
+                          name="Slip_amount"
+                          precision="28"
+                          scale="2" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Balance]"
+                          dataType="numeric"
+                          name="Balance"
+                          precision="28"
+                          scale="2" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1"
+                  componentClassID="{4ADA7EAA-136C-4215-8098-D7A7C27FC0D1}"
+                  contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+                  description="OLE DB Destination"
+                  name="OLE DB Destination 1"
+                  usesDispositions="true"
+                  version="4">
+                  <properties>
+                    <property
+                      dataType="System.Int32"
+                      description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                      name="CommandTimeout">0</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the name of the database object used to open a rowset."
+                      name="OpenRowset">[XML_Load_Error]</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies the variable that contains the name of the database object used to open a rowset."
+                      name="OpenRowsetVariable"></property>
+                    <property
+                      dataType="System.String"
+                      description="The SQL command to be executed."
+                      name="SqlCommand"
+                      UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the column code page to use when code page information is unavailable from the data source."
+                      name="DefaultCodePage">1252</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Forces the use of the DefaultCodePage property value when describing character data."
+                      name="AlwaysUseDefaultCodePage">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies the mode used to access the database."
+                      name="AccessMode"
+                      typeConverter="AccessMode">3</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepIdentity">false</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                      name="FastLoadKeepNulls">false</property>
+                    <property
+                      dataType="System.String"
+                      description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                      name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                      name="FastLoadMaxInsertCommitSize">2147483647</property>
+                  </properties>
+                  <connections>
+                    <connection
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Connections[OleDbConnection]"
+                      connectionManagerID="{63A5A3D1-1F9E-4980-8A24-C60BE8DAF8BA}:external"
+                      connectionManagerRefId="Project.ConnectionManagers[SQL2012_SQL2012.TEST_DB]"
+                      description="The OLE DB runtime connection used to access the database."
+                      name="OleDbConnection" />
+                  </connections>
+                  <inputs>
+                    <input
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input]"
+                      errorOrTruncationOperation="Insert"
+                      errorRowDisposition="FailComponent"
+                      hasSideEffects="true"
+                      name="OLE DB Destination Input">
+                      <inputColumns>
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Custno]"
+                          cachedDataType="nText"
+                          cachedName="Custno"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Custno]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Custno]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Credit_group]"
+                          cachedDataType="nText"
+                          cachedName="Credit_group"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Credit_group]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Credit_group]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Slip_amount]"
+                          cachedDataType="nText"
+                          cachedName="Slip_amount"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Slip_amount]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Slip_amount]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[Balance]"
+                          cachedDataType="nText"
+                          cachedName="Balance"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Balance]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Balance]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[ErrorCode]"
+                          cachedDataType="i4"
+                          cachedName="ErrorCode"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[ErrorCode]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorCode]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[ErrorColumn]"
+                          cachedDataType="i4"
+                          cachedName="ErrorColumn"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[ErrorColumn]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorColumn]" />
+                        <inputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].Columns[XML_File]"
+                          cachedDataType="wstr"
+                          cachedName="XML_File"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[XML_File]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Output].Columns[XML_File]" />
+                      </inputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Custno]"
+                          dataType="nText"
+                          name="Custno" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Credit_group]"
+                          dataType="nText"
+                          name="Credit_group" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Slip_amount]"
+                          dataType="nText"
+                          name="Slip_amount" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[Balance]"
+                          dataType="nText"
+                          name="Balance" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[ErrorCode]"
+                          dataType="i4"
+                          name="ErrorCode" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[ErrorColumn]"
+                          dataType="i4"
+                          name="ErrorColumn" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input].ExternalColumns[XML_File]"
+                          dataType="wstr"
+                          length="1"
+                          name="XML_File" />
+                      </externalMetadataColumns>
+                    </input>
+                  </inputs>
+                  <outputs>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Outputs[OLE DB Destination Error Output]"
+                      exclusionGroup="1"
+                      isErrorOut="true"
+                      name="OLE DB Destination Error Output"
+                      synchronousInputId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input]">
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns />
+                    </output>
+                  </outputs>
+                </component>
+                <component
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source"
+                  componentClassID="{874F7595-FB5F-40FF-96AF-FBFF8250E3EF}"
+                  contactInfo="Extracts data from an XML file. For example, extract catalog data from an XML file that represents catalogs and catalog items. Before using, specify the schema and generate an output for each XML element.;Microsoft Corporation;Microsoft SQL Server; Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2"
+                  description="Extracts data from an XML file. For example, extract catalog data from an XML file that represents catalogs and catalog items. Before using, specify the schema and generate an output for each XML element."
+                  name="XML Source"
+                  usesDispositions="true"
+                  validateExternalMetadata="False"
+                  version="2">
+                  <properties>
+                    <property
+                      dataType="System.String"
+                      name="UserComponentTypeName">Microsoft.SqlServer.Dts.Pipeline.XmlSourceAdapter, Microsoft.SqlServer.XmlSrc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91</property>
+                    <property
+                      dataType="System.String"
+                      description="The XML data used by the XML source adapter."
+                      expressionType="Notify"
+                      name="XMLData"></property>
+                    <property
+                      dataType="System.String"
+                      description="The variable used by the XML source adapter to specify XML data."
+                      name="XMLDataVariable">User::Credit_update_file</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Defines how the XML source adapter gets XML data."
+                      name="AccessMode">1</property>
+                    <property
+                      dataType="System.String"
+                      description="The XML schema definition used by the XML source adapter."
+                      expressionType="Notify"
+                      name="XMLSchemaDefinition">E:\SSIS_FTP\XSD\Credit_update.xsd</property>
+                    <property
+                      dataType="System.Boolean"
+                      description="Identifies whether or not to use inline schema."
+                      name="UseInlineSchema">false</property>
+                    <property
+                      dataType="System.Int32"
+                      description="Defines how XML integer types are mapped."
+                      name="XMLIntegerMapping"
+                      typeConverter="Microsoft.SqlServer.Dts.Pipeline.XmlSourceAdapter+XMLIntegerMappingConverter, Microsoft.SqlServer.XmlSrc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">0</property>
+                  </properties>
+                  <outputs>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer]"
+                      name="Customer">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Identifies the rowset associated with the output."
+                          name="RowsetID">Customer</property>
+                      </properties>
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Custno]"
+                          dataType="ui2"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="RedirectRow"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Custno]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Custno]"
+                          name="Custno"
+                          truncationRowDisposition="RedirectRow" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Credit_group]"
+                          dataType="wstr"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="RedirectRow"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Credit_group]"
+                          length="255"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Credit_group]"
+                          name="Credit_group"
+                          truncationRowDisposition="RedirectRow" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Slip_amount]"
+                          dataType="decimal"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="RedirectRow"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Slip_amount]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Slip_amount]"
+                          name="Slip_amount"
+                          scale="10"
+                          truncationRowDisposition="RedirectRow" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Balance]"
+                          dataType="decimal"
+                          errorOrTruncationOperation="Conversion"
+                          errorRowDisposition="RedirectRow"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Balance]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].Columns[Balance]"
+                          name="Balance"
+                          scale="10"
+                          truncationRowDisposition="RedirectRow" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Custno]"
+                          dataType="ui2"
+                          name="Custno">
+                          <properties>
+                            <property
+                              dataType="System.String"
+                              name="CLRType">System.UInt16</property>
+                          </properties>
+                        </externalMetadataColumn>
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Credit_group]"
+                          dataType="wstr"
+                          length="255"
+                          name="Credit_group">
+                          <properties>
+                            <property
+                              dataType="System.String"
+                              name="CLRType">System.String</property>
+                          </properties>
+                        </externalMetadataColumn>
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Slip_amount]"
+                          dataType="decimal"
+                          name="Slip_amount"
+                          scale="10">
+                          <properties>
+                            <property
+                              dataType="System.String"
+                              name="CLRType">System.Decimal</property>
+                          </properties>
+                        </externalMetadataColumn>
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer].ExternalColumns[Balance]"
+                          dataType="decimal"
+                          name="Balance"
+                          scale="10">
+                          <properties>
+                            <property
+                              dataType="System.String"
+                              name="CLRType">System.Decimal</property>
+                          </properties>
+                        </externalMetadataColumn>
+                      </externalMetadataColumns>
+                    </output>
+                    <output
+                      refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output]"
+                      isErrorOut="true"
+                      name="Customer Error Output">
+                      <properties>
+                        <property
+                          dataType="System.String"
+                          description="Identifies the rowset associated with the output."
+                          name="RowsetID">Customer</property>
+                      </properties>
+                      <outputColumns>
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Custno]"
+                          dataType="nText"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Custno]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Custno]"
+                          name="Custno" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Credit_group]"
+                          dataType="nText"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Credit_group]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Credit_group]"
+                          name="Credit_group" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Slip_amount]"
+                          dataType="nText"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Slip_amount]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Slip_amount]"
+                          name="Slip_amount" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Balance]"
+                          dataType="nText"
+                          externalMetadataColumnId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Balance]"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[Balance]"
+                          name="Balance" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorCode]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorCode]"
+                          name="ErrorCode"
+                          specialFlags="1" />
+                        <outputColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorColumn]"
+                          dataType="i4"
+                          lineageId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].Columns[ErrorColumn]"
+                          name="ErrorColumn"
+                          specialFlags="2" />
+                      </outputColumns>
+                      <externalMetadataColumns
+                        isUsed="True">
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Custno]"
+                          dataType="nText"
+                          name="Custno" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Credit_group]"
+                          dataType="nText"
+                          name="Credit_group" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Slip_amount]"
+                          dataType="nText"
+                          name="Slip_amount" />
+                        <externalMetadataColumn
+                          refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output].ExternalColumns[Balance]"
+                          dataType="nText"
+                          name="Balance" />
+                      </externalMetadataColumns>
+                    </output>
+                  </outputs>
+                </component>
+              </components>
+              <paths>
+                <path
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Customer]"
+                  endId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  name="Customer"
+                  startId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer]" />
+                <path
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Customer Error Output]"
+                  endId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Inputs[Derived Column Input]"
+                  name="Customer Error Output"
+                  startId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source.Outputs[Customer Error Output]" />
+                <path
+                  refId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Derived Column Output]"
+                  endId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1.Inputs[OLE DB Destination Input]"
+                  name="Derived Column Output"
+                  startId="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column.Outputs[Derived Column Output]" />
+              </paths>
+            </pipeline>
+          </DTS:ObjectData>
+        </DTS:Executable>
+        <DTS:Executable
+          DTS:refId="Package\Read SSIS_FTP Credit_update XML\File System Task"
+          DTS:CreationName="Microsoft.SqlServer.Dts.Tasks.FileSystemTask.FileSystemTask, Microsoft.SqlServer.FileSystemTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+          DTS:DelayValidation="True"
+          DTS:Description="File System Task"
+          DTS:DTSID="{9494414D-B050-4616-A9CC-D090E18AB23A}"
+          DTS:ExecutableType="Microsoft.SqlServer.Dts.Tasks.FileSystemTask.FileSystemTask, Microsoft.SqlServer.FileSystemTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+          DTS:LocaleID="-1"
+          DTS:ObjectName="File System Task"
+          DTS:TaskContact="File System Task;Microsoft Corporation; SQL Server 2012; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+          DTS:ThreadHint="0">
+          <DTS:Variables />
+          <DTS:ObjectData>
+            <FileSystemData
+              TaskOperationType="MoveFile"
+              TaskOverwriteDestFile="True"
+              TaskSourcePath="User::Credit_update_file"
+              TaskIsSourceVariable="True"
+              TaskDestinationPath="User::Credit_Update_Done_Files"
+              TaskIsDestinationVariable="True" />
+          </DTS:ObjectData>
+        </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+        <DTS:PrecedenceConstraint
+          DTS:refId="Package\Read SSIS_FTP Credit_update XML.PrecedenceConstraints[Constraint]"
+          DTS:CreationName=""
+          DTS:DTSID="{0AC2AB6A-207D-4BE3-8B2A-DBDD68314C76}"
+          DTS:From="Package\Read SSIS_FTP Credit_update XML\Data Flow Task"
+          DTS:LogicalAnd="True"
+          DTS:ObjectName="Constraint"
+          DTS:To="Package\Read SSIS_FTP Credit_update XML\File System Task" />
+      </DTS:PrecedenceConstraints>
+      <DTS:ForEachVariableMappings>
+        <DTS:ForEachVariableMapping
+          DTS:CreationName=""
+          DTS:DTSID="{872EAA07-0640-4A35-ACCC-6C32924460C2}"
+          DTS:ObjectName="{872EAA07-0640-4A35-ACCC-6C32924460C2}"
+          DTS:ValueIndex="0"
+          DTS:VariableName="User::Credit_update_file" />
+      </DTS:ForEachVariableMappings>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{2AD5B3E2-B50A-4E5F-A26C-33CEDDC1BEBE}"
+      DTS:From="Package\Execute SQL Task"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Read SSIS_FTP Credit_update XML" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql11">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="153,56"
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task"
+          TopLeft="29.5,23.5" />
+        <NodeLayout
+          Size="160,42"
+          Id="Package\Read SSIS_FTP Credit_update XML\File System Task"
+          TopLeft="44,132" />
+        <EdgeLayout
+          Id="Package\Read SSIS_FTP Credit_update XML.PrecedenceConstraints[Constraint]"
+          TopLeft="106,79.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="18,52.5"
+              Start="0,0"
+              End="18,45">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,22.25" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,22.25"
+                    Point2="0,26.25"
+                    Point3="4,26.25" />
+                  <mssgle:LineSegment
+                    End="14,26.25" />
+                  <mssgle:CubicBezierSegment
+                    Point1="14,26.25"
+                    Point2="18,26.25"
+                    Point3="18,30.25" />
+                  <mssgle:LineSegment
+                    End="18,45" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <ContainerLayout
+          HeaderHeight="43"
+          IsExpanded="True"
+          PanelSize="266,234"
+          Size="266,277"
+          Id="Package\Read SSIS_FTP Credit_update XML"
+          TopLeft="385,144" />
+        <NodeLayout
+          Size="165,42"
+          Id="Package\Execute SQL Task"
+          TopLeft="429,37" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="514.75,79">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,65"
+              Start="0,0"
+              End="0,57.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,57.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Read SSIS_FTP Credit_update XML\Data Flow Task">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="173,42"
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination"
+          TopLeft="218,271" />
+        <NodeLayout
+          Size="136,42"
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\XML Source"
+          TopLeft="259,125" />
+        <EdgeLayout
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Customer]"
+          TopLeft="327,167">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-22.5,104"
+              Start="0,0"
+              End="-22.5,96.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,48" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,48"
+                    Point2="0,52"
+                    Point3="-4,52" />
+                  <mssgle:LineSegment
+                    End="-18.5,52" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-18.5,52"
+                    Point2="-22.5,52"
+                    Point3="-22.5,56" />
+                  <mssgle:LineSegment
+                    End="-22.5,96.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="156,42"
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\Derived Column"
+          TopLeft="522,212" />
+        <EdgeLayout
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Customer Error Output]"
+          TopLeft="348.333333333333,167">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="251.666666666667,45"
+              Start="0,0"
+              End="251.666666666667,37.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,14.3139534883721" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,14.3139534883721"
+                    Point2="0,18.3139534883721"
+                    Point3="4,18.3139534883721" />
+                  <mssgle:LineSegment
+                    End="247.666666666667,18.3139534883721" />
+                  <mssgle:CubicBezierSegment
+                    Point1="247.666666666667,18.3139534883721"
+                    Point2="251.666666666667,18.3139534883721"
+                    Point3="251.666666666667,22.3139534883721" />
+                  <mssgle:LineSegment
+                    End="251.666666666667,37.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="74.6844270833333,23.3139534883721,102.2978125,11.43359375"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="182,42"
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1"
+          TopLeft="571,344" />
+        <EdgeLayout
+          Id="Package\Read SSIS_FTP Credit_update XML\Data Flow Task.Paths[Derived Column Output]"
+          TopLeft="600,254">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="62,90"
+              Start="0,0"
+              End="62,82.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,41" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,41"
+                    Point2="0,45"
+                    Point3="4,45" />
+                  <mssgle:LineSegment
+                    End="58,45" />
+                  <mssgle:CubicBezierSegment
+                    Point1="58,45"
+                    Point2="62,45"
+                    Point3="62,49" />
+                  <mssgle:LineSegment
+                    End="62,82.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Read SSIS_FTP Credit_update XML\Data Flow Task\OLE DB Destination 1">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

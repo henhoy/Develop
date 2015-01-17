@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition">
+  <DataSet Name="">
+    <Query>
+      <DataSourceReference>DataSource</DataSourceReference>
+      <CommandText>select min(sst) as OldestSST, max(sst) as NewestSST, 
+           min(SSN) as OldestSSN, max(SSN) as NewestSSN 
+from [dbo].[Trend_Snaps]</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="OldestSST">
+        <DataField>OldestSST</DataField>
+        <rd:TypeName>System.DateTime</rd:TypeName>
+      </Field>
+      <Field Name="NewestSST">
+        <DataField>NewestSST</DataField>
+        <rd:TypeName>System.DateTime</rd:TypeName>
+      </Field>
+      <Field Name="OldestSSN">
+        <DataField>OldestSSN</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="NewestSSN">
+        <DataField>NewestSSN</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>
